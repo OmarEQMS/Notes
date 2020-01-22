@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         //ViewModel LiveData
         noteViewModel = ViewModelProviders.of(this).get(NotesViewModel::class.java)
         noteViewModel.listNotes().observe(this, Observer { notes ->
-            noteAdapter.setNotes(notes)
+            noteAdapter.submitList(notes)
             //Toast.makeText(this@MainActivity, "OnChanged", Toast.LENGTH_SHORT).show()
         })
 

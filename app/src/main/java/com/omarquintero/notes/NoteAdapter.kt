@@ -8,13 +8,23 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-class NoteAdapter: RecyclerView.Adapter<NoteAdapter.NoteHolder>() {
-    private var notes: List<Note> = emptyList()
+class NoteAdapter: ListAdapter<Note, NoteAdapter.NoteHolder>(diffCallback) {
     private var listener: OnItemClickListener? = null
 
-    fun setNotes(notes: List<Note>){
-        this.notes = notes
-        notifyDataSetChanged()
+    companion object {
+        var diffCallback: DiffUtil.ItemCallback<Note> = object: DiffUtil.ItemCallback<Note>() {
+            override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {
+                return oldItem.idNote == newItem.idNote
+            }
+            override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
+                var equal: Boolean = true
+                equal = equal && oldItem.idNote == newItem.idNote
+                equal = equal && oldItem.title == newItem.title
+                equal = equal && oldItem.description == newItem.description
+                equal = equal && oldItem.priority == newItem.priority
+                return equal
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteHolder {
@@ -23,16 +33,12 @@ class NoteAdapter: RecyclerView.Adapter<NoteAdapter.NoteHolder>() {
     }
 
     override fun onBindViewHolder(holder: NoteHolder, position: Int) {
-        val currentNote: Note = notes.get(position)
+        val currentNote: Note = getItem(position)
         holder.bindData(currentNote)
     }
 
-    override fun getItemCount(): Int {
-        return notes.size
-    }
-
     fun getItemAt(position: Int): Note{
-        return notes.get(position)
+        return getItem(position)
     }
 
     interface OnItemClickListener {
@@ -55,7 +61,7 @@ class NoteAdapter: RecyclerView.Adapter<NoteAdapter.NoteHolder>() {
             //Set Listener to the view using an interface in the adapter
             itemView.setOnClickListener { view ->
                 if(listener!=null && adapterPosition!=RecyclerView.NO_POSITION) {
-                    listener!!.onItemClick(getItemAt(adapterPosition))
+                    listener!!.onItemClick(getItem(adapterPosition))
                 }
             }
         }
